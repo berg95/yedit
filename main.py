@@ -136,15 +136,16 @@ def main():
 			elif control == 'u':
 				if line_c != 0:
 					line_c-=1
-			else:
-				if line_c != len(chars):
+			elif control == 'd':
+				if line_c != len(charw):
 					line_c+=1
 		else:
 			if input == 127: # backspace
-				if len(charw[line_c]) == 0:
-					charw.pop(line_c)
+				if currentChar == 0 and line_c != 0:
 					line_c-=1
 					currentChar = len(charw[line_c])
+					charw[line_c] = charw[line_c] + charw[line_c+1]
+					charw.pop(line_c+1)
 				else: # regular input gets inserted into the buffer
 					if currentChar - 1 >= 0:
 						currentChar -= 1
@@ -155,6 +156,10 @@ def main():
 			elif input == 10:
 				charw.insert(line_c+1, "")
 				line_c+=1
+				# move remaining characters of line down to the next line
+				charw[line_c] = charw[line_c-1][currentChar:]
+				charw[line_c-1] = charw[line_c-1][:currentChar]
+				currentChar = 0
 			else:
 				charw[line_c] = charw[line_c][:currentChar] + chr(input) + charw[line_c][currentChar:]
 				currentChar += 1

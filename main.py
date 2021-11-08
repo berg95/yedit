@@ -1,6 +1,7 @@
 #This is a terminal
 import curses
 import os
+import atexit
 
 Y_MARGIN = 2
 X_MARGIN = 4
@@ -10,6 +11,13 @@ filename = input("file: ")
 
 #initialize curses
 stdscr = curses.initscr()
+
+def exit_on_error():
+	stdscr.getch()
+	curses.endwin()
+
+# register endwin() on exit to prevent terminal errors
+atexit.register(exit_on_error)
 
 # will display line numbers
 def draw_line_number(lines, ymargin):
@@ -57,8 +65,11 @@ def parse_direc(input):
 	elif(input == 14): # down (CTRL+n)
 		return 'd'
 
-def org_content(content):
-	cont_r = ["",""]
+def org_content(content, new):
+	if(new):
+		cont_r: str = [""]
+	else:
+		cont_r: str = []
 	cont_t = ""
 
 	for i in content:
@@ -102,19 +113,25 @@ def main():
 	ypos, xpos = 0,0
 	line_c = 0
 	currentChar = 0
+	new_file = False
 
 	# draw window & line numbers
 	draw_window()
-	draw_line_number(currentY, Y_MARGIN)
+	draw_line_number(currentY+1, Y_MARGIN)
 
 	# example debug
 	stdscr.move(ypos+Y_MARGIN,xpos+X_MARGIN)
 
-	input = stdscr.getch()  # initial keypress
-
 	# started blank to prevent errors regarding types
 	chars = open_file(filename)
-	charw = org_content(chars)
+	if(len(chars) == 0):
+		new_file = True
+		charw = org_content(chars, new_file)
+	else:
+		charw = org_content(chars, new_file)
+	
+	currentY = print_content(charw)
+	input = stdscr.getch()  # initial keypress
 
 	# escape to quit
 	while input != 27:
@@ -122,7 +139,7 @@ def main():
 		y, x = stdscr.getyx()
 		#stdscr.box() uncomment this line to draw box
 		draw_window()
-		draw_line_number(currentY, Y_MARGIN)
+		draw_line_number(currentY+1, Y_MARGIN)
 		stdscr.move(Y_MARGIN,X_MARGIN)
 
 		# manage special keys and controls
@@ -177,12 +194,14 @@ def main():
 		stdscr.clear()
 
 	# write to file
-	charw.pop()
+	if(new_file):
+		charw.pop()
 	file = open(filename, 'w')
 	filew = do_revert(charw)
 	file.write(filew)
 	file.close()
 
-	curses.endwin()  # revert terminal to normal
+	atexit.unregister(exit_on_error)
+	curses.endwin() # Depricated
 
 main()

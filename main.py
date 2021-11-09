@@ -65,11 +65,8 @@ def parse_direc(input):
 	elif(input == 14): # down (CTRL+n)
 		return 'd'
 
-def org_content(content, new):
-	if(new):
-		cont_r: str = [""]
-	else:
-		cont_r: str = []
+def org_content(content):
+	cont_r: str = []
 	cont_t = ""
 
 	for i in content:
@@ -78,6 +75,7 @@ def org_content(content, new):
 			cont_t = ""
 		else:
 			cont_t += i
+	cont_r.append(cont_t)
 	return cont_r
 
 # content here should be an array of strings
@@ -113,7 +111,6 @@ def main():
 	ypos, xpos = 0,0
 	line_c = 0
 	currentChar = 0
-	new_file = False
 
 	# draw window & line numbers
 	draw_window()
@@ -124,11 +121,7 @@ def main():
 
 	# started blank to prevent errors regarding types
 	chars = open_file(filename)
-	if(len(chars) == 0):
-		new_file = True
-		charw = org_content(chars, new_file)
-	else:
-		charw = org_content(chars, new_file)
+	charw = org_content(chars)
 	
 	currentY = print_content(charw)
 	input = stdscr.getch()  # initial keypress
@@ -154,7 +147,7 @@ def main():
 				if line_c != 0:
 					line_c-=1
 			elif control == 'd':
-				if line_c != len(charw):
+				if line_c < len(charw)-1:
 					line_c+=1
 		else:
 			if input == 127: # backspace
@@ -194,8 +187,6 @@ def main():
 		stdscr.clear()
 
 	# write to file
-	if(new_file):
-		charw.pop()
 	file = open(filename, 'w')
 	filew = do_revert(charw)
 	file.write(filew)

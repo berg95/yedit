@@ -17,6 +17,6 @@ WARNING: Do not open existing files, there are bugs and it will destroy your dat
 
 # Contributing
 
-If you would like to contribute then simply open a pull request.
+If you would like to contribute then open a pull request.
 
 I started this project with https://github.com/PatelYagna

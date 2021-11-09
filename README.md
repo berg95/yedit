@@ -2,8 +2,6 @@
 
 Text editor written 100% in python!
 
-WARNING: Do not open existing files, there are bugs and it will destroy your data!
-
 
 
 # Cursor movement

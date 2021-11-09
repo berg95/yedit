@@ -99,7 +99,6 @@ def do_revert(content):
 	if str_content[0] == "\n":
 		str_content = str_content[1:]
 	return str_content
-#def update_cursor(current_char): # r,l,u,p
 
 def main():
 	# curses related
